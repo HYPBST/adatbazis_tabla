@@ -283,26 +283,12 @@ return function(Slim\App $app) {
                         ->withHeader('Content-Type', 'application/json')
                         ->withStatus(200);
                 });
-                $app->get('/ertekelesek/film/{id}',
-                function(Request $request, Response $response, array $args) {
-                    if (!is_numeric($args['id']) || $args['id'] <= 0) {
-                        $ki = json_encode(['error' => 'Az ID pozitív egész szám kell legyen!']);
-                        $response->getBody()->write($ki);
-                        return $response
-                            ->withHeader('Content-Type', 'application/json')
-                            ->withStatus(400);
-                    }
+                $app->get('/ertekelesek/film/',
+                function(Response $response) {
                     $ertekelesek = Ertekeles::table('ertekelesek')
                     ->join('filmek', 'filmek.id', '=', 'ertekelesek.film_id')
                     ->select('filmek.cim.*', 'ertekelesek.ertekeles')
                     ->get();
-                    if ($ertekelesek === null) {
-                        $ki = json_encode(['error' => 'Nincs ilyen ID-jű Ertekeles']);
-                        $response->getBody()->write($ki);
-                        return $response
-                            ->withHeader('Content-Type', 'application/json')
-                            ->withStatus(404);
-                    }
                     $response->getBody()->write($ertekelesek->toJson());
                     return $response
                         ->withHeader('Content-Type', 'application/json')
